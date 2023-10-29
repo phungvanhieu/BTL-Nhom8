@@ -7,7 +7,7 @@ from sklearn.model_selection import cross_val_score
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 
-#  Đây là đường dẫn được tạo từ máy nhóm bọn em. Nếu thầy chạy được code thì đổi lại đường dẫn ạ . Em xin 
+#  Đây là đường dẫn được tạo từ máy nhóm bọn em. Nếu thầy không chạy được code thì đổi lại đường dẫn ạ . Em xin 
 # lỗi vì sự bất tiện này ạ !!!
 TRAIN_PATH = "D:\BTL-Nhom8\Train.xlsx"
 TEST_PATH = "D:\BTL-Nhom8\Test.xlsx"
