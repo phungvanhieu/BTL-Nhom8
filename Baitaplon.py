@@ -1,3 +1,4 @@
+
 import numpy as np
 import pandas as pd
 import warnings
@@ -6,32 +7,37 @@ from sklearn.model_selection import cross_val_score
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 
-# Đây là đường dẫn được tạo từ máy nhóm bọn em. Nếu thầy chạy được code thì đổi lại đường dẫn ạ . Em xin 
-#lỗi vì sự bất tiện này ạ !!!
+#  Đây là đường dẫn được tạo từ máy nhóm bọn em. Nếu thầy chạy được code thì đổi lại đường dẫn ạ . Em xin 
+# lỗi vì sự bất tiện này ạ !!!
 TRAIN_PATH = "D:\BTL-Nhom8\Train.xlsx"
 TEST_PATH = "D:\BTL-Nhom8\Test.xlsx"
 warnings.filterwarnings("ignore", category=UserWarning, module='sklearn')
 
-# Load the data
+# Tải dữ liệu
 df = pd.read_excel(TRAIN_PATH)
 
-# Define a function to copy the dataframe
+
+# Định nghĩa hàm để sao chép khung dữ liệu
 def copy(df):
     return df.copy()
 
-# Define a function to drop a column
+
+# Loại bỏ 1 cột từ Dataframe
 def drop(df, col):
     new_df = df.drop(col, axis=1)
     return new_df
 
-# Define a function to drop rows based on a condition
+
+# định nghĩa một hàm để loại bỏ các hàng từ một DataFrame dựa trên điều kiện
 def drop_row(df, col, find):
     new_df = df[df[col] != find]
     return new_df
 
+
 def get_dummies(df, col):
     return pd.get_dummies(df, columns=[col])
-    
+
+
 def replace(df, col):
     replace_list = [",", " minutes"]
     new_df = df.copy()
@@ -39,22 +45,27 @@ def replace(df, col):
         new_df[col] = new_df[col].str.replace(rep, "")
     return new_df
 
+
 def to_numeric(df, col):
     new_df = df.copy()
     new_df[col] = pd.to_numeric(new_df[col])
     return new_df
 
+
 def train_pipeline(df):
     return (df.pipe(replace, "Delivery_Time")
-              .pipe(to_numeric, "Delivery_Time"))
+            .pipe(to_numeric, "Delivery_Time"))
 
-# Define a function for the data preprocessing pipeline
+
+# định nghĩa một hàm có tên pipeline để tạo một chuỗi xử lý dữ liệu cho một DataFrame,
+# xử lý dữ liệu trên DataFrame làm sạch dữ liệu, biến đổi cột, loại bỏ cột không cần thiết
 def pipeline(df):
     return (df.pipe(copy)
-              .pipe(get_dummies, "Location")
-              .pipe(to_numeric, "Distance")
-              .pipe(drop_row, "Cost", "for")  
-              .pipe(to_numeric, "Cost"))
+            .pipe(get_dummies, "Location")
+            .pipe(to_numeric, "Distance")
+            .pipe(drop_row, "Cost", "for")  #  drop_row
+            .pipe(to_numeric, "Cost"))
+
 
 train = pipeline(df)
 train = train_pipeline(train)
@@ -69,35 +80,37 @@ train_data_numpy
 train_label = train["Delivery_Time"]
 train_label
 
-# Create and train the Linear Regression model
+# Tạo và huấn luyện mô hình Hồi quy Tuyến tính
 linear_reg = LinearRegression()
 linear_reg.fit(train_data_numpy, train_label)
 
-# Evaluate the Linear Regression model using cross-validation
+# Đánh giá mô hình Hồi quy Tuyến tính bằng cách sử dụng kỹ thuật cross-validation
 linear_reg_scores = cross_val_score(linear_reg, train_data_numpy, train_label, scoring="neg_mean_squared_error", cv=10)
 linear_reg_rmse_scores = np.sqrt(-linear_reg_scores)
 
-# Define a function to display the evaluation scores
+
+# Hiển thị các điểm số đánh giá của mô hình
 def display_scores(scores):
     print("Scores:", scores)
     print("Mean:", scores.mean())
     print("Standard deviation:", scores.std())
 
-# Display the evaluation scores for Linear Regression
+
+#  Hiển thị điểm số đánh giá cho mô hình hồi quy tuyến tính sau khi đã huấn luyện
 display_scores(linear_reg_rmse_scores)
 
-# Load the test data
+# Tải dữ liệu Test data
 test_df = pd.read_excel(TEST_PATH)
 
-# Preprocess the test data
+# Quá trình tiền xử lý dữ liệu cho dữ liệu kiểm tra (test data)
 dataset = pd.concat([df, test_df], axis=0)
 dataset = pipeline(dataset)
 test = dataset[len(train):]
 test = test.drop("Delivery_Time", axis=1)
 
-# Make predictions using Linear Regression
+# Dự đoán kết quả cho tập dữ liệu Test bằng hồi quy tuyến tính
 prediction = linear_reg.predict(test)
 
-# Create a submission DataFrame
+# Tạo 1 bảng dữ liệu
 submission = pd.DataFrame({"Delivery_Time": prediction})
 submission.to_csv('result.csv', index=False)
