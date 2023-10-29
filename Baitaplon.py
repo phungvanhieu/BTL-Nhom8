@@ -6,8 +6,8 @@ from sklearn.model_selection import cross_val_score
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 
-TRAIN_PATH = "D:\Hocmay\Train.xlsx"
-TEST_PATH = "D:\Hocmay\Test.xlsx"
+TRAIN_PATH = "D:\BTL-Nhom8\Train.xlsx"
+TEST_PATH = "D:\BTL-Nhom8\Test.xlsx"
 warnings.filterwarnings("ignore", category=UserWarning, module='sklearn')
 
 # Load the data
